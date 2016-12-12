@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,7 +45,6 @@ public class activitydetails extends FragmentActivity {
     String posterimage;
     String adult;
     String originaltitle;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,21 +59,9 @@ public class activitydetails extends FragmentActivity {
         adult=c.getString("adult");
         posterimage=c.getString("poster");
         originaltitle=c.getString("org title");
-        Details_fradgment dfragment=new Details_fradgment();
-        Bundle bundle1 = new Bundle();
-        bundle1.putString("tit", titles);
-        bundle1.putString("back", backdroppath);
-        bundle1.putString("relase date",release_dates);
-        bundle1.putDouble("vote",rates);
-        bundle1.putString("overview", overviews);
-        bundle1.putInt("id", ids);
-        bundle1.putString("adult",adult);
-        bundle1.putString("poster", posterimage);
-        bundle1.putString("org title",originaltitle);
-        dfragment.setArguments(bundle1);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.det,new Details_fradgment(),"det frag")
+                .replace(R.id.det,new Details_fragment(),"det frag")
                 .commit();
 
 
@@ -81,8 +69,11 @@ public class activitydetails extends FragmentActivity {
     }
 
 
+    /**
+     * Created by compu city on 11/12/2016.
+     */
+    public  class Details_fragment extends Fragment {
 
-    public  class Details_fradgment extends Fragment {
         ArrayList<videosAdapter> items=new ArrayList<videosAdapter>();
         ArrayList<reviewClass>items2=new ArrayList<reviewClass>();
         trailer_in_list adapter;
@@ -98,17 +89,18 @@ public class activitydetails extends FragmentActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View v= inflater.inflate(R.layout.fra_details,container,false);
+            setandget sg=new setandget();
             Bundle bundle = this.getArguments();
             if (bundle != null) {
-                titles=bundle.getString("tit");
-                rates=bundle.getDouble("vote");
-                release_dates=bundle.getString("relase date");
-                overviews=bundle.getString("overview");
-                backdroppath=bundle.getString("back");
-                ids=bundle.getInt("id");
-                adult=bundle.getString("adult");
-                posterimage=bundle.getString("poster");
-                originaltitle=bundle.getString("org title");
+                titles=sg.getTitles();
+                rates=sg.getRates();
+                release_dates=sg.getRelease_dates();
+                overviews=sg.getOverviews();
+                backdroppath=sg.getBackdroppath();
+                ids=sg.getIds();
+                adult=sg.getAdult();
+                posterimage=sg.getPosterimage();
+                originaltitle=sg.getOriginaltitle();
             }
             final TextView title=(TextView)v.findViewById(R.id.titleoriginal);
             TextView rate=(TextView)v.findViewById(R.id.rate);
@@ -194,7 +186,7 @@ public class activitydetails extends FragmentActivity {
             reviews.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String urll="https://api.themoviedb.org/3/movie/"+ids+"/reviews?api_key=57f93999f4575103d984801210045dcd";
+                    String urll="https://api.themoviedb.org/3/movie/"+ ids+"/reviews?api_key=57f93999f4575103d984801210045dcd";
                     RequestQueue rq;
                     rq= Volley.newRequestQueue(getContext());
                     JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
@@ -289,9 +281,6 @@ public class activitydetails extends FragmentActivity {
             });
             rq.add(jsonObjReq);
         }
-
-
-
     }
 }
 
